@@ -55,6 +55,6 @@ Python 3.9+ is required. A provider can report incorrect data; the tool does not
 - [Token facts and evidence](docs/TOKEN-FACTS.md)
 - [Evidence-gated roadmap](docs/ROADMAP.md)
 - [Security policy](SECURITY.md) · [Contributing](CONTRIBUTING.md)
-- [Nano Core Agents](https://github.com/oromaskevic23-cmd/Nano-Core-Agents-Public) · [IMPERIAL Core](https://github.com/oromaskevic23-cmd/IMPERIAL-Core-Public)
+- [Nano Core Agents](https://github.com/oromaskevic23-cmd/Nano-Core-Agents-Public) · [IMPERIAL Core](https://github.com/oromaskevic23-cmd/Capital--Core-Public)
 
 **Architecture → Implementation → Evidence**
