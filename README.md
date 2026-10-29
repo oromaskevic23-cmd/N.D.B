@@ -9,6 +9,8 @@
 **Founder and Architect:** Alexander Romaskevich · **Signature:** RomaskevicH  
 **Network:** Polygon PoS Mainnet · **Contract:** `0x5F5E3dCa37D12F1bFef21418B066c6ccacbebBE4`
 
+**Explore the two-project overview:** [NDB & IMPERIUM in the CRYPTO IMPERIAL Ecosystem →](https://github.com/oromaskevic23-cmd/CRYPTO-IMPERIAL-Ecosystem-Public#imperium--ndb)
+
 ## Project status
 
 NDB is a Polygon token project. Its contract is listed as an **Exact Match** on [Sourcify](https://repo.sourcify.dev/137/0x5F5E3dCa37D12F1bFef21418B066c6ccacbebBE4), which identifies the contract as `NDB_Sovereign`. Source matching does not establish an independent security audit, market liquidity, exchange listing, commercial adoption or production agent payments.
