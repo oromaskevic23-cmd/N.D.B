@@ -1,5 +1,7 @@
 # NDB — New Digital Bitcoin
 
+**Project founder and founding architect:** Alexander Nikolaevich Romaskevich (RomaskevicH). [Authorship and contribution provenance](AUTHORS.md).
+
 <p align="center">
   <img src="assets/ndb-hero-20261029.jpg" alt="NDB digital emblem" width="420">
 </p>
