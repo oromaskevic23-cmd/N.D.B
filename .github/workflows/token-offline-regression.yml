@@ -1,0 +1,30 @@
+# Project author and founding architect: Alexander Nikolaevich Romaskevich (RomaskevicH).
+# Offline only. Never use wallets, real signing keys, paid RPC or transaction broadcasts.
+name: "NDB — Read-Only Evidence CI"
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: token-offline-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  offline-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout without persistent credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Check Python interpreter
+        run: python3 --version
+      - name: Compile and import source
+        run: python3 -m compileall -q src tests
+      - name: Run offline negative and lifecycle tests
+        env:
+          PYTHONPATH: src
+        run: python3 -m unittest discover -s tests -v
