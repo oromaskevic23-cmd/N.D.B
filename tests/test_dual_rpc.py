@@ -4,7 +4,7 @@ Project author and founding architect: Alexander Nikolaevich Romaskevich (Romask
 """
 import json
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stdout, redirect_stderr
 from hashlib import sha256
 from io import StringIO
 from unittest.mock import patch
@@ -124,10 +124,12 @@ class NDBDualRPCSecurityTests(unittest.TestCase):
         )
 
     def test_same_rpc_url_is_not_counted_as_two_providers(self):
-        with self.assertRaises(AssertionError):
-            # No side-effect is required by this test; failure is returned by CLI.
-            assert main(["--rpc-url", "https://rpc-one.example",
-                         "--second-rpc-url", "https://rpc-one.example"]) == 0
+        error = StringIO()
+        with redirect_stderr(error):
+            result = main(["--rpc-url", "https://rpc-one.example",
+                           "--second-rpc-url", "https://rpc-one.example"])
+        self.assertEqual(result, 1)
+        self.assertIn("distinct RPC URLs", error.getvalue())
 
 
 if __name__ == "__main__":
