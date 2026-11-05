@@ -39,6 +39,10 @@ The related project [IMPERIUM](https://github.com/oromaskevic23-cmd/IMPERIUM) is
 
 See [Token facts](docs/TOKEN-FACTS.md) for the evidence scope and outstanding checks. Current supply, distribution, transfer conditions, liquidity and market data require separate current, block-anchored evidence. Network fees depend on the chain and transaction conditions.
 
+## Same-block cross-provider verification — 5 November 2026
+
+An optional read-only mode compares contract code hash, metadata, raw supply and block hash across two operator-supplied HTTPS Polygon RPC endpoints **at one shared block**. Any disagreement stops the report. Agreement is not proof of endpoint independence, consensus finality, an independent contract audit, exchange listing or liquidity. [Instructions, security boundaries and offline tests](docs/DUAL_RPC_EVIDENCE_20261105.md).
+
 ## Read-only token observation
 
 This repository includes a Python standard-library tool that reads the configured NDB contract from an operator-supplied HTTPS Polygon JSON-RPC endpoint. It checks the chain ID and code presence, reads name, symbol, decimals and total supply at one numbered block, and checks the block hash again before returning a JSON report. It uses an explicit read-only RPC method allowlist and has no signing or transaction submission functionality.

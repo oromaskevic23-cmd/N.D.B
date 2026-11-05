@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+from hashlib import sha256
 import re
 import sys
 import urllib.error
@@ -124,11 +125,17 @@ def _block_hash(rpc, tag, expected_number):
     return block_hash.lower()
 
 
-def observe(rpc):
-    """Read contract metadata at one numbered block from an RPC-compatible object."""
+def observe(rpc, block_number=None):
+    """Read one numbered block; a caller may pin a shared height for cross-checking."""
     if quantity(rpc.call("eth_chainId", [])) != CHAIN_ID:
         raise VerificationError("Endpoint is not Polygon Mainnet (chain ID 137)")
-    number = quantity(rpc.call("eth_blockNumber", []))
+    latest = quantity(rpc.call("eth_blockNumber", []))
+    if block_number is None:
+        number = latest
+    elif type(block_number) is not int or block_number < 0 or block_number > latest:
+        raise VerificationError("Requested cross-check block height is unavailable")
+    else:
+        number = block_number
     tag = hex(number)
     before = _block_hash(rpc, tag, number)
     bytecode = hex_bytes(rpc.call("eth_getCode", [ADDRESS, tag]))
@@ -150,6 +157,7 @@ def observe(rpc):
         "block_number": number,
         "block_hash": before,
         "bytecode_size_bytes": len(bytecode),
+        "bytecode_sha256": sha256(bytecode).hexdigest(),
         "name": values["name"],
         "symbol": values["symbol"],
         "decimals": values["decimals"],
@@ -160,15 +168,53 @@ def observe(rpc):
     }
 
 
+def observe_two(rpc, peer_rpc):
+    """Compare two operator-supplied RPC observations at one shared height.
+
+    Provider agreement is NOT an Ethereum consensus/finality proof, a source audit,
+    or proof that the endpoint operators are independent.
+    """
+    first_head = quantity(rpc.call("eth_blockNumber", []))
+    second_head = quantity(peer_rpc.call("eth_blockNumber", []))
+    height = min(first_head, second_head)
+    first = observe(rpc, block_number=height)
+    second = observe(peer_rpc, block_number=height)
+    bound_fields = (
+        "chain_id", "contract", "block_number", "block_hash",
+        "bytecode_size_bytes", "bytecode_sha256", "name", "symbol",
+        "decimals", "total_supply_raw",
+    )
+    if any(first[field] != second[field] for field in bound_fields):
+        raise VerificationError("Two RPC endpoints disagree; no verified report produced")
+    first["cross_check"] = {
+        "status": "TWO_RPC_REPORTS_AGREE_NOT_FINALITY_PROOF",
+        "shared_block_number": height,
+        "fields_compared": list(bound_fields),
+        "independent_providers_verified": False,
+    }
+    first["limitations"] = (
+        "Two operator-supplied RPC reports agreed at one block. Endpoint independence, "
+        "source matching, finality, market data and contract security are not verified."
+    )
+    return first
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Read-only, block-anchored NDB contract observation on Polygon.")
     parser.add_argument("--rpc-url", default=os.environ.get("NDB_RPC_URL"),
                         help="HTTPS Polygon JSON-RPC endpoint; NDB_RPC_URL can be used instead")
+    parser.add_argument("--second-rpc-url", default=os.environ.get("NDB_SECOND_RPC_URL"),
+                        help="Optional independent HTTPS RPC for same-block field comparison")
     args = parser.parse_args(argv)
     if not args.rpc_url:
         parser.error("set NDB_RPC_URL or provide --rpc-url")
     try:
-        report = observe(ReadOnlyRPC(args.rpc_url))
+        if args.second_rpc_url:
+            if args.second_rpc_url == args.rpc_url:
+                raise VerificationError("Two distinct RPC URLs are required")
+            report = observe_two(ReadOnlyRPC(args.rpc_url), ReadOnlyRPC(args.second_rpc_url))
+        else:
+            report = observe(ReadOnlyRPC(args.rpc_url))
     except VerificationError as exc:
         print(f"Verification failed: {exc}", file=sys.stderr)
         return 1
