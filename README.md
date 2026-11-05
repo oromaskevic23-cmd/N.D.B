@@ -23,7 +23,9 @@ The name New Digital Bitcoin is the project name; NDB is a distinct Polygon toke
 
 NDB aims to support a transparent digital-asset ecosystem with independently verifiable contract information and, subject to further engineering and approvals, useful services for AI-driven workflows. Potential integrations are proposals and must be tested and authorized before any use involving funds.
 
-The related project [IMPERIUM](https://github.com/oromaskevic23-cmd/IMPERIUM-) is a **long-term architectural digital currency envisioned for AI agents worldwide**, not a claim of existing global adoption. Both projects remain within the [CRYPTO IMPERIAL Ecosystem](https://github.com/oromaskevic23-cmd/CRYPTO-IMPERIAL-Ecosystem-Public) boundary.
+[Buyer value and proposed utility](docs/BUYER_VALUE_AND_UTILITY_20261105.md) describes a possible service-redemption model and the work required before customers could use it. No redemption program or promised return exists in this repository.
+
+The related project [IMPERIUM](https://github.com/oromaskevic23-cmd/IMPERIUM) is a **long-term architectural digital currency envisioned for AI agents worldwide**, not a claim of existing global adoption. Both projects remain within the [CRYPTO IMPERIAL Ecosystem](https://github.com/oromaskevic23-cmd/CRYPTO-IMPERIAL-Ecosystem-Public) boundary.
 
 ## Contract identity
 

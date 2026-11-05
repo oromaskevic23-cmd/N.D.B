@@ -1,5 +1,7 @@
 # NDB Architecture and Trust Boundaries
 
+**Project founder and architect:** Alexander Nikolaevich Romaskevich (RomaskevicH).
+
 This document describes a development direction. No production payment system or autonomous economic activity is asserted.
 
 ## Roles
@@ -24,6 +26,6 @@ The Python observation tool uses read-only RPC calls to inspect the configured c
 
 ## Related projects
 
-- [IMPERIUM](https://github.com/oromaskevic23-cmd/IMPERIUM-) — long-term architectural digital currency envisioned for AI agents worldwide.
+- [IMPERIUM](https://github.com/oromaskevic23-cmd/IMPERIUM) — long-term architectural digital currency envisioned for AI agents worldwide.
 - [Nano Core Agents](https://github.com/oromaskevic23-cmd/Nano-Core-Agents-Public) — public professional-agent architecture.
 - [CRYPTO IMPERIAL Ecosystem](https://github.com/oromaskevic23-cmd/CRYPTO-IMPERIAL-Ecosystem-Public) — separate crypto-development direction.
