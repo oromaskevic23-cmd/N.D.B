@@ -110,6 +110,34 @@ class ObservationTests(unittest.TestCase):
 
 
 class TransportTests(unittest.TestCase):
+    def test_accepts_a_matching_integer_id(self):
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *_): return None
+            def read(self, _): return b'{"jsonrpc":"2.0","id":1,"result":"0x89"}'
+        with patch("urllib.request.build_opener") as opener:
+            opener.return_value.open.return_value = Response()
+            self.assertEqual(ReadOnlyRPC("https://offline.invalid").call("eth_chainId", []), "0x89")
+
+    def test_rejects_ambiguous_or_invalid_json_rpc_responses(self):
+        class Response:
+            def __init__(self, body): self.body = body
+            def __enter__(self): return self
+            def __exit__(self, *_): return None
+            def read(self, _): return self.body
+        invalid = (
+            b'{"jsonrpc":"2.0","id":true,"result":"0x89"}',
+            b'{"jsonrpc":"2.0","id":1.0,"result":"0x89"}',
+            b'{"jsonrpc":"2.0","id":1,"result":"0x1","result":"0x89"}',
+            b'{"jsonrpc":"2.0","id":1,"result":{"x":1,"x":2}}',
+            b'{"jsonrpc":"2.0","id":1,"result":NaN}',
+        )
+        for body in invalid:
+            with self.subTest(body=body), patch("urllib.request.build_opener") as opener:
+                opener.return_value.open.return_value = Response(body)
+                with self.assertRaises(VerificationError):
+                    ReadOnlyRPC("https://offline.invalid").call("eth_chainId", [])
+
     def test_method_allowlist_rejects_transaction(self):
         rpc = ReadOnlyRPC("https://example.org")
         with patch("urllib.request.build_opener") as network:

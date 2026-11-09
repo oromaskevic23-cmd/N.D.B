@@ -37,6 +37,20 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise VerificationError("RPC redirects are not supported; use the final HTTPS endpoint")
 
 
+def _unique_json_object(pairs):
+    """Reject ambiguous provider data instead of silently keeping the last value."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON object key")
+        result[key] = value
+    return result
+
+
+def _reject_nonfinite_json(_value):
+    raise ValueError("non-finite JSON value")
+
+
 def quantity(value):
     if not isinstance(value, str) or not re.fullmatch(r"0x(?:0|[1-9a-fA-F][0-9a-fA-F]*)", value):
         raise VerificationError("Invalid JSON-RPC quantity")
@@ -106,11 +120,13 @@ class ReadOnlyRPC:
         if len(payload) > MAX_RESPONSE_BYTES:
             raise VerificationError("RPC response exceeds size limit")
         try:
-            result = json.loads(payload)
+            result = json.loads(payload, object_pairs_hook=_unique_json_object,
+                                parse_constant=_reject_nonfinite_json)
         except (ValueError, UnicodeDecodeError) as exc:
             raise VerificationError("RPC response is not valid JSON") from exc
         if (not isinstance(result, dict) or result.get("jsonrpc") != "2.0"
-                or result.get("id") != request_id or "result" not in result or "error" in result):
+                or type(result.get("id")) is not int or result["id"] != request_id
+                or "result" not in result or "error" in result):
             raise VerificationError("RPC returned an invalid response or error")
         return result["result"]
 
